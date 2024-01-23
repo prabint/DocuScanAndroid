@@ -1,0 +1,7 @@
+[*.{kt,kts}]
+ktlint_code_style = android_studio
+ktlint_function_naming_ignore_when_annotated_with = Composable
+trim_trailing_whitespace = true
+max_line_length = 120
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true

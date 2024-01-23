@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Docu Scan</string>
+    <string name="settings">Settings</string>
+    <string name="close">Close</string>
+    <string name="camera_permission_required">Camera permission required</string>
+    <string name="camera_permission_required_desc">Please enable camera permission from system settings.</string>
+    <string name="preview">Preview</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+    <string name="capture_photo">Capture photo</string>
+    <string name="opencv_document_scan_minimal">OpenCV document scan - minimal</string>
+    <string name="opencv_document_scan_full">OpenCV document scan - full</string>
+    <string name="mlkit_object_detection">MlKit Object Detection</string>
+</resources>

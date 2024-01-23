@@ -1,0 +1,28 @@
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  test_and_build:
+    uses: ./.github/workflows/test_and_build.yaml
+
+  tagged_release:
+    needs: test_and_build
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: debugApk
+
+      - name: Create release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          files: |
+            $GITHUB_WORKSPACE/debugApk

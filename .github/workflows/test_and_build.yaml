@@ -1,0 +1,73 @@
+name: "test-and-build"
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Android SDK
+        # Only run on local act setups; GitHub Actions provides the Android SDK
+        if: ${{ env.ACT }}
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build project
+        # TODO: Increase build number -PversionCode=${{ github.run_id }} -PversionName=${{ github.run_id }} or ${{ GITHUB_RUN_NUMBER }}?
+        run: ./gradlew build
+      - run: echo "versionCode=${{ github.run_id }}; build status report=${{ job.status }}"
+
+      - name: Run ktlint check
+        run: ./gradlew ktlintCheck
+      - run: echo "ktlintCheck status report=${{ job.status }}."
+
+      - name: Run UI tests
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          profile: pixel_xl
+          arch: x86_64
+          target: google_apis
+          emulator-options: -no-snapshot-save -no-window -no-window -noaudio -no-boot-anim -camera-front none -camera-back virtualscene
+          pre-emulator-launch-script: |
+            cp app/src/androidTest/files/Toren1BD.posters app/src/androidTest/files/custom.jpeg $ANDROID_HOME/emulator/resources
+          script: ./gradlew connectedAndroidTest
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: |
+            app/build/reports
+            app/build/outputs/connected_android_test_additional_output
+
+      - name: Upload apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: debugApk
+          path: app/build/outputs/apk/debug/app-debug.apk
