@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.popUpTo
 import prabin.timsina.documentscanner.R
 import prabin.timsina.documentscanner.ui.NavGraphs
 import prabin.timsina.documentscanner.ui.common.BottomBar

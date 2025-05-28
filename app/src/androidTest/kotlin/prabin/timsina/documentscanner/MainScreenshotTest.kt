@@ -3,10 +3,9 @@ package prabin.timsina.documentscanner
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Point
+import android.os.SystemClock
+import androidx.test.core.app.takeScreenshot
 import androidx.test.core.graphics.writeToTestStorage
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.matcher.ViewMatchers.isRoot
-import androidx.test.espresso.screenshot.captureToBitmap
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
@@ -54,8 +53,10 @@ class MainScreenshotTest {
             .wait(Until.findObject(By.text(targetContext.getString(R.string.opencv_document_scan_minimal))), 5000)
             .click()
 
+        SystemClock.sleep(5000)
+
         val similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().apply { writeToTestStorage(name = "opencv_minimal") },
+            image1 = takeScreenshot().apply { writeToTestStorage(name = "opencv_minimal") },
             image2 = assets.open("opencv_minimal.png").use { BitmapFactory.decodeStream(it) },
         )
 
@@ -70,10 +71,11 @@ class MainScreenshotTest {
             .wait(Until.findObject(By.text(targetContext.getString(R.string.mlkit_object_detection))), 5000)
             .click()
 
-        Thread.sleep(2000)
+        SystemClock.sleep(5000)
 
+        takeScreenshot()
         val similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().apply { writeToTestStorage(name = "mlkit_preview") },
+            image1 = takeScreenshot().apply { writeToTestStorage(name = "mlkit_preview") },
             image2 = assets.open("mlkit_preview.png").use { BitmapFactory.decodeStream(it) },
         )
 
@@ -88,6 +90,8 @@ class MainScreenshotTest {
             .wait(Until.findObject(By.text(targetContext.getString(R.string.opencv_document_scan_full))), 5000)
             .click()
 
+        SystemClock.sleep(5000)
+
         // Live camera screen
         val captureButton =
             uiDevice.wait(Until.findObject(By.desc(targetContext.getString(R.string.capture_photo))), 5000)
@@ -96,7 +100,7 @@ class MainScreenshotTest {
         Thread.sleep(2000)
 
         var similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().apply { writeToTestStorage(name = "opencv_full_1") },
+            image1 = takeScreenshot().apply { writeToTestStorage(name = "opencv_full_1") },
             image2 = assets.open("opencv_full_1.png").use { BitmapFactory.decodeStream(it) },
         )
 
@@ -108,7 +112,7 @@ class MainScreenshotTest {
         val previewButton = uiDevice.wait(Until.findObject(By.text(targetContext.getString(R.string.preview))), 5000)
 
         similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().also { it.writeToTestStorage(name = "polygon_1") },
+            image1 = takeScreenshot().also { it.writeToTestStorage(name = "polygon_1") },
             image2 = assets.open("polygon_1.png").use { BitmapFactory.decodeStream(it) },
         )
 
@@ -120,7 +124,7 @@ class MainScreenshotTest {
         uiDevice.wait(Until.findObject(By.text(targetContext.getString(R.string.save))), 5000)
 
         similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().also { it.writeToTestStorage(name = "preview_1") },
+            image1 = takeScreenshot().also { it.writeToTestStorage(name = "preview_1") },
             image2 = assets.open("preview_1.png").use { BitmapFactory.decodeStream(it) },
         )
 
@@ -132,7 +136,7 @@ class MainScreenshotTest {
         dragCorners()
 
         similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().also { it.writeToTestStorage(name = "polygon_2") },
+            image1 = takeScreenshot().also { it.writeToTestStorage(name = "polygon_2") },
             image2 = assets.open("polygon_2.png").use { BitmapFactory.decodeStream(it) },
         )
 
@@ -146,7 +150,7 @@ class MainScreenshotTest {
         uiDevice.wait(Until.findObject(By.text(targetContext.getString(R.string.save))), 5000)
 
         similarity = ImageComparator.isSimilar(
-            image1 = onView(isRoot()).captureToBitmap().also { it.writeToTestStorage(name = "preview_2") },
+            image1 = takeScreenshot().also { it.writeToTestStorage(name = "preview_2") },
             image2 = assets.open("preview_2.png").use { BitmapFactory.decodeStream(it) },
         )
 

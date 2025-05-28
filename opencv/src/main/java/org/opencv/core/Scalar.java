@@ -6,19 +6,19 @@ public class Scalar {
     public double val[];
 
     public Scalar(double v0, double v1, double v2, double v3) {
-        val = new double[]{v0, v1, v2, v3};
+        val = new double[] { v0, v1, v2, v3 };
     }
 
     public Scalar(double v0, double v1, double v2) {
-        val = new double[]{v0, v1, v2, 0};
+        val = new double[] { v0, v1, v2, 0 };
     }
 
     public Scalar(double v0, double v1) {
-        val = new double[]{v0, v1, 0, 0};
+        val = new double[] { v0, v1, 0, 0 };
     }
 
     public Scalar(double v0) {
-        val = new double[]{v0, 0, 0, 0};
+        val = new double[] { v0, 0, 0, 0 };
     }
 
     public Scalar(double[] vals) {
@@ -28,10 +28,6 @@ public class Scalar {
             val = new double[4];
             set(vals);
         }
-    }
-
-    public static Scalar all(double v) {
-        return new Scalar(v, v, v, v);
     }
 
     public void set(double[] vals) {
@@ -44,13 +40,17 @@ public class Scalar {
             val[0] = val[1] = val[2] = val[3] = 0;
     }
 
+    public static Scalar all(double v) {
+        return new Scalar(v, v, v, v);
+    }
+
     public Scalar clone() {
         return new Scalar(val);
     }
 
     public Scalar mul(Scalar it, double scale) {
         return new Scalar(val[0] * it.val[0] * scale, val[1] * it.val[1] * scale,
-            val[2] * it.val[2] * scale, val[3] * it.val[3] * scale);
+                val[2] * it.val[2] * scale, val[3] * it.val[3] * scale);
     }
 
     public Scalar mul(Scalar it) {

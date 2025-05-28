@@ -23,7 +23,7 @@ done in `Toren1BD.posters`. In that file, the following lines were appended to t
 
 ```
 poster custom
-size 1 1
+size 1.2 1.2
 position 0.05 -0.15 -0.7
 rotation 0 0 0
 default custom.jpeg

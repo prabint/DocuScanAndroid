@@ -4,18 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import kotlin.math.min
-import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.opencv.android.Utils
@@ -24,8 +23,12 @@ import org.opencv.core.Point
 import prabin.timsina.documentscanner.opencv.OpenCvNativeBridge
 import prabin.timsina.documentscanner.ui.common.deleteCachePhoto
 import prabin.timsina.documentscanner.ui.common.saveToCache
+import prabin.timsina.documentscanner.ui.edit.EditPolygonViewModel.Companion.RADIUS
 import prabin.timsina.documentscanner.ui.navArgs
 import timber.log.Timber
+import javax.inject.Inject
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 @HiltViewModel
 @SuppressLint("StaticFieldLeak")
@@ -79,7 +82,7 @@ class EditPolygonViewModel @Inject constructor(
     val previousBoxSize = _previousBoxSize.asStateFlow()
 
     init {
-        val uri = Uri.parse(navArgs.uri)
+        val uri = navArgs.uri.toUri()
 
         originalBitmap.value = when (uri.scheme) {
             "content" ->
@@ -105,11 +108,9 @@ class EditPolygonViewModel @Inject constructor(
             b = boxSize.height.toFloat() / originalBitmap.value!!.height,
         )
 
-        _scaledBitmap.value = Bitmap.createScaledBitmap(
-            originalBitmap.value!!,
+        _scaledBitmap.value = originalBitmap.value!!.scale(
             (originalBitmap.value!!.width * ratio).roundToInt(),
             (originalBitmap.value!!.height * ratio).roundToInt(),
-            true,
         )
 
         // Calculate corners for the scaled bitmap that has no offset, i.e. origin of image is at top-left (0,0)
@@ -147,18 +148,7 @@ class EditPolygonViewModel @Inject constructor(
             )
         }
 
-        Timber.d(
-            "------------\n" +
-                "Original Image Size: ${originalBitmap.value?.width}x${originalBitmap.value?.height}\n" +
-                "Box size: ${boxSize}\n" +
-                "ratio = $ratio\n" +
-                "Scaled Image size: ${scaledBitmap.value?.width}x${scaledBitmap.value?.height}\n" +
-                "scaledMat size: ${scaledMat.size()}\n" +
-                "imageOffsetInsideBox = ${imageOffsetInsideBox.value}\n" +
-                "scaledPoint = $scaledCornerPoints\n" +
-                "adjustedScaledCornerPoints = ${adjustedScaledCornerPoints.value}\n" +
-                "------------\n",
-        )
+        Timber.d("------------\nOriginal Image Size: ${originalBitmap.value?.width}x${originalBitmap.value?.height}\nBox size: ${boxSize}\nratio = $ratio\nScaled Image size: ${scaledBitmap.value?.width}x${scaledBitmap.value?.height}\nscaledMat size: ${scaledMat.size()}\nimageOffsetInsideBox = ${imageOffsetInsideBox.value}\nscaledPoint = $scaledCornerPoints\nadjustedScaledCornerPoints = ${adjustedScaledCornerPoints.value}\n------------\n")
     }
 
     fun onMove(points: List<Point>) {
@@ -188,12 +178,7 @@ class EditPolygonViewModel @Inject constructor(
             },
         )
 
-        val resultBitmap = Bitmap.createBitmap(
-            transformedBitmap.cols(),
-            transformedBitmap.rows(),
-            Bitmap.Config.ARGB_8888,
-        )
-
+        val resultBitmap = createBitmap(transformedBitmap.cols(), transformedBitmap.rows())
         Utils.matToBitmap(transformedBitmap, resultBitmap)
         return resultBitmap.saveToCache(context)
     }
